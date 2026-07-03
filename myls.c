@@ -8,7 +8,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define THRESHOLD 50
+#define THRESHOLD 15
 #define SECONDS_IN_30_DAYS (30 * 24 * 60 * 60)
 
 #define RED_COLOR   "\033[1;31m"
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 
 	DIR *dir = opendir(".");
 	if (dir == NULL) {
-		perror("Nie można otworzyć katalogu");
+		perror("Can't open this file");
 		return 1;
 	}
 
