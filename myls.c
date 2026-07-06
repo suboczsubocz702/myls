@@ -85,22 +85,29 @@ void process_entry(const char *filename) {
 	}
 
 	if (is_important) {
-		printf("%s%s[★] %s%s\n", RED_COLOR, size_str, filename, RESET_COLOR);
+		printf("%s%s[★] %s%s ", RED_COLOR, size_str, filename, RESET_COLOR);
 	} else {
-		printf("    %s%s\n", size_str, filename);
+		printf("    %s%s ", size_str, filename);
 	}
 }
 
 int main(int argc, char *argv[]) {
 	int opt;
 
-	while ((opt = getopt(argc, argv, "s")) != -1) {
+	while ((opt = getopt(argc, argv, "sh")) != -1) {
 		switch (opt) {
 			case 's':
 				show_size = true;
 				break;
+
+			case 'h':
+				printf("Użycie: %s [-s] [-h]\n", argv[0]);
+				printf("  -s	show file size\n");
+				printf("  -h	show help\n");
+				return 0;
+
 			default:
-				fprintf(stderr, "Użycie: %s [-s]\n", argv[0]);
+				fprintf(stderr, "Usage: %s [-s] [-h]\n", argv[0]);
 				return 1;
 		}
 	}
@@ -111,12 +118,25 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
+	int count = 0;
+	int items_per_rows = 10;
+
 	struct dirent *entry;
 	while ((entry = readdir(dir)) != NULL) {
 		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
 			continue;
 		}
+
 		process_entry(entry->d_name);
+		count++;
+
+		if (count % items_per_rows == 0) {
+			printf("\n");
+		}
+	}
+
+	if (count % items_per_rows != 0) {
+		printf("\n");
 	}
 
 	closedir(dir);
