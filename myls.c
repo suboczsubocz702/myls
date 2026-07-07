@@ -15,6 +15,7 @@
 #define RESET_COLOR "\033[0m"
 
 bool show_size = false;
+bool show_all = false;
 
 bool is_file_important(const char *path) {
 	struct stat file_stat;
@@ -94,18 +95,22 @@ void process_entry(const char *filename) {
 int main(int argc, char *argv[]) {
 	int opt;
 
-	while ((opt = getopt(argc, argv, "sh")) != -1) {
+	while ((opt = getopt(argc, argv, "sha")) != -1) {
 		switch (opt) {
 			case 's':
 				show_size = true;
 				break;
 
 			case 'h':
-				printf("Użycie: %s [-s] [-h]\n", argv[0]);
+				printf("Użycie: %s [-s] [-h] [-a]\n", argv[0]);
 				printf("  -s	show file size\n");
 				printf("  -h	show help\n");
+				printf("  -a	show all files\n");
 				return 0;
-
+			case 'a':
+				show_all = true;
+				break;
+			
 			default:
 				fprintf(stderr, "Usage: %s [-s] [-h]\n", argv[0]);
 				return 1;
@@ -114,7 +119,7 @@ int main(int argc, char *argv[]) {
 
 	DIR *dir = opendir(".");
 	if (dir == NULL) {
-		perror("Can't open this file");
+		perror("Can't open direcotry");
 		return 1;
 	}
 
@@ -124,6 +129,10 @@ int main(int argc, char *argv[]) {
 	struct dirent *entry;
 	while ((entry = readdir(dir)) != NULL) {
 		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+			continue;
+		}
+
+		if (!show_all && entry->d_name[0] =='.'){
 			continue;
 		}
 
